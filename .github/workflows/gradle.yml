@@ -26,11 +26,6 @@ jobs:
         with:
           java-version: '11'
 
-      - name: Set up Android SDK
-        uses: android/setup-android@v2
-        with:
-          sdk-platform: '21'
-
       - name: Build and run tests
         run: |
           ./gradlew test
