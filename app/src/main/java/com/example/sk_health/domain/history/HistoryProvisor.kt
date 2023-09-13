@@ -9,7 +9,8 @@ import org.jetbrains.annotations.NotNull
 import javax.inject.Inject
 
 class HistoryProvisor @Inject constructor(
-    @NotNull private val realmConfig: RealmConfiguration
+    @NotNull
+    private val realmConfig: RealmConfiguration
 ) : IHistoryProvisor {
     override suspend fun getHistoryItems(): List<HistoryItemLocal> {
         val realm = Realm.getInstance(realmConfig)

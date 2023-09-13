@@ -38,6 +38,7 @@ class HomeFragment : Fragment() {
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
     private var cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+    private var round = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
@@ -52,6 +53,7 @@ class HomeFragment : Fragment() {
         val getPhoto = registerForActivityResult(ActivityResultContracts.GetContent()) {
             val bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, it)
             viewModel.processPhoto(bitmap)
+            round = true
             Handler(Looper.getMainLooper()).postDelayed(Runnable { showPredictionCard() }, 1000L)
         }
 
@@ -91,7 +93,7 @@ class HomeFragment : Fragment() {
 
         viewModel.photoResult.observe(viewLifecycleOwner) {
             binding.captureResultCard.label.text = it.title
-            binding.captureResultCard.probability.text = resources.getString(R.string.probability, (it.probability * 100)).plus("%")
+            binding.captureResultCard.probability.text = resources.getString(R.string.probability, if (round) it.probability * 100 else it.probability).plus("%")
             binding.captureResultCard.diseaseImage.setImageResource(it.imageRes)
             binding.captureResultCard.diseaseInfo.setText(it.textRes)
         }
@@ -122,6 +124,7 @@ class HomeFragment : Fragment() {
             @SuppressLint("UnsafeOptInUsageError")
             override fun onCaptureSuccess(image: ImageProxy) {
                 viewModel.processPhoto(image.image!!.toBitmap())
+                round = false
                 Handler(Looper.getMainLooper()).post {
                     showPredictionCard()
                 }
